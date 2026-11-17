@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Build;
@@ -28,6 +30,8 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -217,6 +221,9 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "百度定位已在运行", Toast.LENGTH_SHORT).show();
             return;
         }
+        // 新增：定位 SDK 隐私同意
+        LocationClient.setAgreePrivacy(true);
+
         try {
             locationClient = new LocationClient(getApplicationContext());
         } catch (Exception e) {
@@ -337,8 +344,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void addMarkerAtPoint(double latitude, double longitude) {
         LatLng point = new LatLng(latitude, longitude);
+
+        // 创建一个 10x10 像素、红色的 Bitmap
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(10, 10, conf);
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawColor(Color.RED);
+
+        // 将Bitmap转换为BitmapDescriptor
+        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromBitmap(bmp);
+
         OverlayOptions markerOptions = new MarkerOptions()
                 .position(point)
+                .icon(bitmap)      // 必须设置图标
                 .title("轨迹点");
         baiduMap.addOverlay(markerOptions);
     }

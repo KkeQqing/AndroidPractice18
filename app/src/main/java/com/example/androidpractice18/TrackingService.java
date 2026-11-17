@@ -141,6 +141,8 @@ public class TrackingService extends Service implements LocationListener {
     }
 
     private void startBaiduLocationTracking() {
+        // 新增：定位 SDK 隐私同意
+        LocationClient.setAgreePrivacy(true);
         try {
             baiduLocationClient = new LocationClient(getApplicationContext());
         } catch (Exception e) {
